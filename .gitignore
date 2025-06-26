@@ -10,3 +10,4 @@
 # Documentation here: https://yarnpkg.com/features/caching#zero-installs
 
 node_modules
+.env
