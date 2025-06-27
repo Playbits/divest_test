@@ -1,5 +1,30 @@
 # divest
+# 📘  Project: Online Bookstore API (Node.js + Express + MySQL + Sequelize)
 
+This project is a full-featured RESTful API for an Online Bookstore, designed to support core e-commerce operations such as browsing books, managing carts, placing orders, and processing transactions.
+
+It was built using Node.js, Express, and MySQL, with Sequelize ORM for model definition and database interaction. The API supports clean, structured endpoints with full validation and scalable architecture.
+🔧 Key Features
+
+    📚 Books: List, search by title/author/genre, and view book details.
+
+    🛒 Shopping Cart: Add/remove items and fetch current cart contents.
+
+    🧾 Orders: Create orders directly from cart items and retrieve past orders.
+
+    💳 Transactions: Handle order payments and track transaction history.
+
+    👤 Customers: Manage customer records and view user-specific data.
+
+🧪 Quality & Testing
+
+    ✅ Request validation using express-validator
+
+    🧪 Unit and integration tests written in Jest with supertest
+
+    🔁 Manual query fallback for associations to ensure stability
+
+    📦 Postman collection generated for easy API testing
 ## Installation
 
 1. Clone the repository:
