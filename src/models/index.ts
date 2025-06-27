@@ -11,5 +11,3 @@ const sequelize = new Sequelize(
 );
 
 export { sequelize };
-
-// export { Book, Cart, CartItem, Order, OrderItem, Customer };

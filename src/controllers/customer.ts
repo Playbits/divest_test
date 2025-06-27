@@ -15,10 +15,10 @@ export const createCustomer = async (req: Request, res: Response) => {
       phone,
     });
     res.status(201).json(newCustomer);
-  } catch (error) {
+  } catch (error: any) {
     res.status(400).json({
       message: "Failed to add book",
-      error: error?.original.sqlMessage,
+      error: error.original.sqlMessage,
     });
   }
 };
@@ -56,11 +56,11 @@ export const getCustomerCart = async (req: Request, res: Response) => {
     if (!cart) {
       res.status(404).json({ message: "cart not found" });
     }
-    res.json({ ...cart.dataValues, items });
-  } catch (error) {
+    res.json({ ...cart?.dataValues, items });
+  } catch (error: any) {
     res.status(400).json({
       message: "Failed to fetch customer cart",
-      error: error?.original.sqlMessage,
+      error: error.original.sqlMessage,
     });
   }
 };

@@ -6,6 +6,7 @@ import { Book } from "./book";
 import { sequelize } from ".";
 
 export class CartItem extends Model {
+  [x: string]: any;
   /**
    * Helper method for defining associations.
    * This method is not a part of Sequelize lifecycle.

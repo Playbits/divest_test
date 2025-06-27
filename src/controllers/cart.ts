@@ -11,7 +11,7 @@ export const addToCart = async (req: Request, res: Response) => {
       cart = await Cart.create({ customerId });
     }
 
-    let item = await CartItem.findOne({
+    let item: any = await CartItem.findOne({
       where: { cartId: cart.dataValues.id, bookId },
     });
     const book = await Book.findByPk(bookId);
@@ -39,10 +39,10 @@ export const addToCart = async (req: Request, res: Response) => {
       where: { cartId: cart.dataValues.id },
     });
     res.status(200).json({ message: "Book added to cart", cart, items });
-  } catch (error) {
+  } catch (error: any) {
     res
       .status(400)
-      .json({ message: "Failed to add book to cart", error: error?.original });
+      .json({ message: "Failed to add book to cart", error: error.original });
   }
 };
 
@@ -55,12 +55,12 @@ export const removeFromCart = async (req: Request, res: Response) => {
   }
 
   const item = await CartItem.findOne({
-    where: { cartId: cart.dataValues.id, bookId },
+    where: { cartId: cart?.dataValues.id, bookId },
   });
   if (!item) {
     res.status(404).json({ message: "Item not found in cart" });
   }
 
-  await item.destroy();
+  await item?.destroy();
   res.status(200).json({ message: "Book removed from cart" });
 };
