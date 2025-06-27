@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { Customer } from "../models/customer";
 import { Cart } from "../models/cart";
 import { CartItem } from "../models/cartitem";
-import { Book } from "../models/book";
 
 // Create a new customer
 export const createCustomer = async (req: Request, res: Response) => {
@@ -17,7 +16,10 @@ export const createCustomer = async (req: Request, res: Response) => {
     });
     res.status(201).json(newCustomer);
   } catch (error) {
-    res.status(400).json({ message: "Failed to add book", error });
+    res.status(400).json({
+      message: "Failed to add book",
+      error: error?.original.sqlMessage,
+    });
   }
 };
 
@@ -28,14 +30,15 @@ export const getCustomers = async (_req: Request, res: Response) => {
 };
 
 // Get a single customer by ID
-export const getCustomerById = (req: Request, res: Response) => {
+export const getCustomerById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const customer = Customer.findByPk(id);
+  const customer = await Customer.findByPk(parseInt(id));
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
   }
   res.json(customer);
 };
+
 // Get a customer's cart by customer ID
 export const getCustomerCart = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -55,6 +58,9 @@ export const getCustomerCart = async (req: Request, res: Response) => {
     }
     res.json({ ...cart.dataValues, items });
   } catch (error) {
-    res.status(400).json({ message: "Failed to fetch customer cart", error });
+    res.status(400).json({
+      message: "Failed to fetch customer cart",
+      error: error?.original.sqlMessage,
+    });
   }
 };

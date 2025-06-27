@@ -32,6 +32,14 @@ export const createTransaction = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Order already completed" });
     }
 
+    // check if amount is correct
+    if (order.dataValues.total != amount) {
+      await t.rollback();
+      return res.status(404).json({
+        message: "Invalid amount, order total is " + order.dataValues.total,
+      });
+    }
+
     // 2. Create the transaction record
     const transaction = await Transaction.create(
       {
@@ -98,6 +106,32 @@ export const getTransaction = async (req: Request, res: Response) => {
     }
 
     return res.json(transaction);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const viewCustomerTransactions = async (req: Request, res: Response) => {
+  const customerId = parseInt(req.params.customerId);
+
+  try {
+    // Step 1: Get all order IDs for the customer
+    const customerOrders = await Order.findAll({
+      where: { customerId },
+      attributes: ["id"],
+    });
+
+    const orderIds = customerOrders.map((order) => order.dataValues.id);
+    // Step 2: Get all transactions where orderId is in the list
+    const transactions = await Transaction.findAll({
+      where: {
+        orderId: orderIds,
+      },
+      order: [["createdAt", "DESC"]],
+    });
+
+    return res.json(transactions);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Internal server error" });

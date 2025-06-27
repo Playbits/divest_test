@@ -1,7 +1,7 @@
 import express from "express";
 import {
   createCustomer,
-  getCustomers,
+  getCustomerById,
   getCustomerCart,
 } from "../controllers/customer";
 import {
@@ -13,7 +13,7 @@ import { validate } from "../middleware/validate";
 const router = express.Router();
 
 router.post("/", createCustomerValidator, validate, createCustomer);
-router.get("/:id", customerIdParamValidator, validate, getCustomers);
+router.get("/:id", customerIdParamValidator, validate, getCustomerById);
 router.get("/:id/cart", customerIdParamValidator, validate, getCustomerCart);
 
 export default router;

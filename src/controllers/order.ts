@@ -35,6 +35,7 @@ export const createOrderFromCart = async (req: Request, res: Response) => {
     const order = await Order.create(
       {
         customerId,
+        total: 0,
       },
       { transaction }
     );
@@ -43,11 +44,14 @@ export const createOrderFromCart = async (req: Request, res: Response) => {
       where: { id: bookIds },
       transaction,
     });
+    let order_total = 0;
     // Prepare bulk order items
     const orderItemsPayload = cartItems.map((item) => {
       const book = books.find(
         (book) => book.dataValues.id == item.dataValues.bookId
       );
+      const item_value = book?.dataValues.price * item.dataValues.quantity;
+      order_total += item_value;
       return {
         orderId: order.dataValues.id,
         bookId: item.dataValues.bookId,
@@ -58,6 +62,9 @@ export const createOrderFromCart = async (req: Request, res: Response) => {
 
     // Insert all order items at once
     await OrderItem.bulkCreate(orderItemsPayload, { transaction });
+
+    // Update total on order
+    await order.update({ total: order_total }, { transaction });
 
     // clear cart
     await CartItem.destroy({

@@ -28,3 +28,9 @@ export const transactionIdParamValidator = [
     .isInt({ gt: 0 })
     .withMessage("Transaction ID must be a positive integer"),
 ];
+
+export const customerIdParamValidator = [
+  param("customerId")
+    .isInt({ gt: 0 })
+    .withMessage("customerId must be a positive integer"),
+];

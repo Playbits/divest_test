@@ -14,7 +14,10 @@ export const createBook = async (req: Request, res: Response) => {
     });
     res.status(201).json(newBook);
   } catch (error) {
-    res.status(400).json({ message: "Failed to add book", error });
+    res.status(400).json({
+      message: "Failed to add book",
+      error: error?.original.sqlMessage,
+    });
   }
 };
 
