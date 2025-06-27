@@ -34,7 +34,7 @@ export const getCustomerById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const customer = await Customer.findByPk(parseInt(id));
   if (!customer) {
-    return res.status(404).json({ message: "Customer not found" });
+    res.status(404).json({ message: "Customer not found" });
   }
   res.json(customer);
 };
@@ -54,7 +54,7 @@ export const getCustomerCart = async (req: Request, res: Response) => {
       },
     });
     if (!cart) {
-      return res.status(404).json({ message: "cart not found" });
+      res.status(404).json({ message: "cart not found" });
     }
     res.json({ ...cart.dataValues, items });
   } catch (error) {

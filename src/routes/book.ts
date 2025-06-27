@@ -17,6 +17,12 @@ router
   .post(createBookValidator, validate, createBook); // POST /book - Create a new book
 
 router.get("/search", searchBookValidator, validate, searchBooks);
-router.route("/:id").get(getBook);
+// Helper to wrap async route handlers and forward errors to Express error handler
+const asyncHandler =
+  (fn: any) =>
+  (req: express.Request, res: express.Response, next: express.NextFunction) =>
+    Promise.resolve(fn(req, res, next)).catch(next);
+
+router.route("/:id").get(asyncHandler(getBook));
 
 export default router;

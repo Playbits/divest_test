@@ -13,7 +13,7 @@ export const createBook = async (req: Request, res: Response) => {
       stock: quantity,
     });
     res.status(201).json(newBook);
-  } catch (error) {
+  } catch (error: any) {
     res.status(400).json({
       message: "Failed to add book",
       error: error?.original.sqlMessage,
@@ -30,7 +30,7 @@ export const getBook = async (req: Request, res: Response) => {
   const { id } = req.params;
   const book = await Book.findByPk(Number(id));
   if (!book) {
-    return res.status(404).json({ message: "Book not found" });
+    res.status(404).json({ message: "Book not found" });
   }
   res.json(book);
 };

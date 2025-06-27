@@ -24,19 +24,19 @@ export const createTransaction = async (req: Request, res: Response) => {
 
     if (!order || !orderItems) {
       await t.rollback();
-      return res.status(404).json({ message: "Order not found" });
+      res.status(404).json({ message: "Order not found" });
     }
 
-    if (order.dataValues.status === "completed") {
+    if (order?.dataValues.status === "completed") {
       await t.rollback();
-      return res.status(400).json({ message: "Order already completed" });
+      res.status(400).json({ message: "Order already completed" });
     }
 
     // check if amount is correct
-    if (order.dataValues.total != amount) {
+    if (order?.dataValues.total != amount) {
       await t.rollback();
-      return res.status(404).json({
-        message: "Invalid amount, order total is " + order.dataValues.total,
+      res.status(404).json({
+        message: "Invalid amount, order total is " + order?.dataValues.total,
       });
     }
 
@@ -61,37 +61,37 @@ export const createTransaction = async (req: Request, res: Response) => {
 
       if (!book) {
         await t.rollback();
-        return res.status(400).json({
+        res.status(400).json({
           message: `Book with ID ${item.dataValues.bookId} not found`,
         });
       }
 
-      if (book.dataValues.stock < item.dataValues.quantity) {
+      if (book?.dataValues.stock < item.dataValues.quantity) {
         await t.rollback();
-        return res.status(400).json({
-          message: `Not enough stock for book "${book.dataValues.title}"`,
+        res.status(400).json({
+          message: `Not enough stock for book "${book?.dataValues.title}"`,
         });
       }
 
-      await book.update(
+      await book?.update(
         { stock: book.dataValues.stock - item.dataValues.quantity },
         { transaction: t }
       );
     }
 
     // 4. Update order status
-    await order.update({ status: "completed" }, { transaction: t });
+    await order?.update({ status: "completed" }, { transaction: t });
 
     await t.commit();
 
-    return res.status(201).json({
+    res.status(201).json({
       message: "Transaction successful, order completed",
       transaction,
     });
   } catch (error) {
     await t.rollback();
     console.error(error);
-    return res.status(500).json({ message: "Internal server error", error });
+    res.status(500).json({ message: "Internal server error", error });
   }
 };
 
@@ -102,13 +102,13 @@ export const getTransaction = async (req: Request, res: Response) => {
     const transaction = await Transaction.findByPk(id);
 
     if (!transaction) {
-      return res.status(404).json({ message: "Transaction not found" });
+      res.status(404).json({ message: "Transaction not found" });
     }
 
-    return res.json(transaction);
+    res.json(transaction);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -131,10 +131,10 @@ export const viewCustomerTransactions = async (req: Request, res: Response) => {
       order: [["createdAt", "DESC"]],
     });
 
-    return res.json(transactions);
+    res.json(transactions);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -143,10 +143,10 @@ export const listTransactions = async (_req: Request, res: Response) => {
     const transactions = await Transaction.findAll({
       order: [["createdAt", "DESC"]],
     });
-    return res.json(transactions);
+    res.json(transactions);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

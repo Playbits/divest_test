@@ -51,14 +51,14 @@ export const removeFromCart = async (req: Request, res: Response) => {
 
   const cart = await Cart.findOne({ where: { customerId, status: "open" } });
   if (!cart) {
-    return res.status(404).json({ message: "Cart not found" });
+    res.status(404).json({ message: "Cart not found" });
   }
 
   const item = await CartItem.findOne({
     where: { cartId: cart.dataValues.id, bookId },
   });
   if (!item) {
-    return res.status(404).json({ message: "Item not found in cart" });
+    res.status(404).json({ message: "Item not found in cart" });
   }
 
   await item.destroy();

@@ -5,10 +5,6 @@ export const createTransactionValidator = [
     .isFloat({ gt: 0 })
     .notEmpty()
     .withMessage("amount must be a positive number"),
-  body("reference")
-    .isString()
-    .notEmpty()
-    .withMessage("reference is required and must be a string"),
   body("orderId")
     .isInt({ gt: 0 })
     .notEmpty()

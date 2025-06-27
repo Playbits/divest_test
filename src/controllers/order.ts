@@ -28,7 +28,7 @@ export const createOrderFromCart = async (req: Request, res: Response) => {
 
     if (!cart || cartItems.length == 0) {
       await transaction.rollback();
-      return res.status(404).json({ message: "Cart is empty or not found" });
+      res.status(404).json({ message: "Cart is empty or not found" });
     }
 
     // Create new order
@@ -73,11 +73,31 @@ export const createOrderFromCart = async (req: Request, res: Response) => {
     });
 
     await transaction.commit();
-    return res
+    res
       .status(201)
       .json({ message: "Order created", orderId: order.dataValues.id });
   } catch (err) {
     await transaction.rollback();
-    return res.status(500).json({ message: "Something went wrong" });
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+export const getCustomerOrders = async (req: Request, res: Response) => {
+  try {
+    const customerId = parseInt(req.params.customerId);
+
+    if (isNaN(customerId)) {
+      res.status(400).json({ message: "Invalid customer ID" });
+    }
+
+    const orders = await Order.findAll({
+      where: { customerId },
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Error fetching customer orders:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

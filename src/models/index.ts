@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize";
-import SQconfig from "../../config/config";
+import SQconfig from "../../config/config.js";
 
 const config = SQconfig.development;
 
