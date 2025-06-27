@@ -1,0 +1,76 @@
+import { Request, Response } from "express";
+import { sequelize } from "../models";
+import { Cart } from "../models/cart";
+import { CartItem } from "../models/cartitem";
+import { Book } from "../models/book";
+import { Order } from "../models/order";
+import { OrderItem } from "../models/orderitem";
+
+export const createOrderFromCart = async (req: Request, res: Response) => {
+  const { customerId } = req.body;
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    // Find active cart
+    const cart = await Cart.findOne({
+      where: { customerId },
+      transaction,
+    });
+    let cartItems: CartItem[];
+    cartItems = await CartItem.findAll({
+      where: {
+        cartId: cart?.dataValues.id,
+      },
+
+      transaction,
+    });
+
+    if (!cart || cartItems.length == 0) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Cart is empty or not found" });
+    }
+
+    // Create new order
+    const order = await Order.create(
+      {
+        customerId,
+      },
+      { transaction }
+    );
+    const bookIds = cartItems.map((item) => item.dataValues.bookId);
+    const books = await Book.findAll({
+      where: { id: bookIds },
+      transaction,
+    });
+    // Prepare bulk order items
+    const orderItemsPayload = cartItems.map((item) => {
+      const book = books.find(
+        (book) => book.dataValues.id == item.dataValues.bookId
+      );
+      return {
+        orderId: order.dataValues.id,
+        bookId: item.dataValues.bookId,
+        quantity: item.dataValues.quantity,
+        price: book?.dataValues.price,
+      };
+    });
+
+    // Insert all order items at once
+    await OrderItem.bulkCreate(orderItemsPayload, { transaction });
+
+    // clear cart
+    await CartItem.destroy({
+      where: { cartId: cart?.dataValues.id },
+      transaction,
+    });
+
+    await transaction.commit();
+    return res
+      .status(201)
+      .json({ message: "Order created", orderId: order.dataValues.id });
+  } catch (err) {
+    await transaction.rollback();
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};

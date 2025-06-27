@@ -19,6 +19,10 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
+      total: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false,
+      },
       status: {
         type: Sequelize.STRING,
         defaultValue: "pending",
